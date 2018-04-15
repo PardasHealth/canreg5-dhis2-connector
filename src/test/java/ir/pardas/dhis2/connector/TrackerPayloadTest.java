@@ -30,21 +30,33 @@ public class TrackerPayloadTest {
                 if(i==1)
                     continue;
                 TrackedEntityInstance trackedEntityInstance = new TrackedEntityInstance();
+//TODO
+                trackedEntityInstance.setTrackedEntityInstance(null);//Dictionary.DIC_TrackedEntityInstance
+//TODO
+                trackedEntityInstance.setOrgUnit(null);//Dictionary.DIC_OrgUnit
+//TODO
+                trackedEntityInstance.setTrackedEntityType(null);//Dictionary.DIC_TrackedEntityType
 
-                trackedEntityInstance.setTrackedEntityInstance(record.get(Dictionary.DIC_TrackedEntityInstance));
-                trackedEntityInstance.setOrgUnit(record.get(Dictionary.DIC_OrgUnit));
-                trackedEntityInstance.setTrackedEntityType(record.get(Dictionary.DIC_TrackedEntityType));
 
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.attribute, record.get(attribute)));
+                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
+                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_FIRSTN, record.get(Dictionary.DIC_FIRSTN)));
+                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_FATHNAME, record.get(Dictionary.DIC_FATHNAME)));
+                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
+                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
+                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
+                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
+                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
 
                 try {
                     TrackedEntityInstances connector = new TrackedEntityInstances();
                     String respose = connector.post(trackedEntityInstance);
                     System.out.println(respose);
 
+/*
                     TrackedEntityInstancesQuery queryConnector = new TrackedEntityInstancesQuery();
                     respose = queryConnector.get("ouMode=ALL&filter=" + dictionary.getDictionaryElement(Dictionary.DIC_FIRSTNAME).getUid() + ":EQ:Mahdi");
                     System.out.println(respose);
+*/
 
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
