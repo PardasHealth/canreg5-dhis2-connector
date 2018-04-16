@@ -1,14 +1,11 @@
 package ir.pardas.dhis2.connector;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.hisp.dhis.dxf2.events.trackedentity.TrackedEntityInstance;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,23 +27,44 @@ public class TrackerPayloadTest {
                 if(i==1)
                     continue;
                 TrackedEntityInstance trackedEntityInstance = new TrackedEntityInstance();
-//TODO
-                trackedEntityInstance.setTrackedEntityInstance(null);//Dictionary.DIC_TrackedEntityInstance
-//TODO
-                trackedEntityInstance.setOrgUnit(null);//Dictionary.DIC_OrgUnit
-//TODO
-                trackedEntityInstance.setTrackedEntityType(null);//Dictionary.DIC_TrackedEntityType
+//TODO   کد منحصر بفرد فرد
+                trackedEntityInstance.setTrackedEntityInstance("0"+record.get(Dictionary.DIC_NID));//Dictionary.DIC_TrackedEntityInstance
+//TODO  sDzK609rUbJ بیمارستان امام
+                trackedEntityInstance.setOrgUnit("sDzK609rUbJ");//Dictionary.DIC_OrgUnit
+//TODO  nEenWmSyUEp Persone
+                trackedEntityInstance.setTrackedEntityType("nEenWmSyUEp");//Dictionary.DIC_TrackedEntityType
 
-
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_FIRSTN, record.get(Dictionary.DIC_FIRSTN)));
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_FATHNAME, record.get(Dictionary.DIC_FATHNAME)));
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
-                trackedEntityInstance.getAttributes().add(dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
-
+//Tracker Attributes
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_FIRSTN, record.get(Dictionary.DIC_FIRSTN)));
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_FATHNAME, record.get(Dictionary.DIC_FATHNAME)));
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_FAMN, record.get(Dictionary.DIC_FAMN)));
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_NID, record.get(Dictionary.DIC_NID)));
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_BIRTHD, record.get(Dictionary.DIC_BIRTHD)));
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_TELEPHONE, record.get(Dictionary.DIC_TELEPHONE)));
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_MOBILEN, record.get(Dictionary.DIC_MOBILEN)));
+                trackedEntityInstance.getAttributes().add(
+                        dictionary.createAttribute(Dictionary.DIC_MOBILEN, record.get(Dictionary.DIC_MOBILEN)));
+                // 'household location' & 'Nationality' not find
+                /*List<Enrollment> enrollments = new ArrayList<>();
+                Enrollment enrollment = new Enrollment();
+                //.....
+                List<Event>events = new ArrayList<>();
+                Event event = new Event();
+                //.....
+                events.add(event);
+                enrollment.setEvents(events);
+                enrollments.add(enrollment);
+                trackedEntityInstance.setEnrollments(enrollments);*/
+//
                 try {
                     TrackedEntityInstances connector = new TrackedEntityInstances();
                     String respose = connector.post(trackedEntityInstance);
@@ -58,7 +76,7 @@ public class TrackerPayloadTest {
                     System.out.println(respose);
 */
 
-                } catch (JsonProcessingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
