@@ -10,8 +10,8 @@ public class DictionaryElement {
 
     public DictionaryElement(String value) {
         this.value = value;
-        uid = value.split(":")[0];
-        valueType = ValueType.valueOf(value.split(":")[1]);
+//        uid = value.split(":")[0];
+        valueType = ValueType.TEXT;//.valueOf(value.split(":")[1]);
     }
 
     public String getUid() {

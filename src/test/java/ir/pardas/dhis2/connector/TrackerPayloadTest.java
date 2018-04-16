@@ -16,7 +16,7 @@ public class TrackerPayloadTest {
         Dictionary dictionary = new Dictionary();
         try {
             dictionary.load();
-            Path path = Paths.get(this.getClass().getResource("/demographic.csv").toURI());
+            Path path = Paths.get(this.getClass().getResource("/breast11.csv").toURI());
 
             CSVParser parser = CSVFile.read(path, Dictionary.CSV_HEADER);
 
