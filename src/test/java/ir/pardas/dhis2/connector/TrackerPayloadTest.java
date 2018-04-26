@@ -1,90 +1,123 @@
 package ir.pardas.dhis2.connector;
 
+import com.eclipsesource.json.*;
+import com.ibm.icu.text.SimpleDateFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.hisp.dhis.dxf2.events.trackedentity.TrackedEntityInstance;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class TrackerPayloadTest {
-    @Test
-    public void testJson() {
-        Dictionary dictionary = new Dictionary();
+
+    Dictionary dictionary = new Dictionary();
+    private static final Logger logger;
+
+    static {
+        InputStream config = TrackerPayloadTest.class.getResourceAsStream("/logging.properties");
         try {
-            dictionary.load();
-            Path path = Paths.get(this.getClass().getResource("/breast11.csv").toURI());
-
-            CSVParser parser = CSVFile.read(path, Dictionary.CSV_HEADER);
-
-            int i = 0;
-            for (CSVRecord record : parser) {
-                i++;
-                //Skip 1st line
-                if(i==1)
-                    continue;
-                TrackedEntityInstance trackedEntityInstance = new TrackedEntityInstance();
-//TODO   کد منحصر بفرد فرد
-                trackedEntityInstance.setTrackedEntityInstance("0"+record.get(Dictionary.DIC_NID));//Dictionary.DIC_TrackedEntityInstance
-//TODO  sDzK609rUbJ بیمارستان امام
-                trackedEntityInstance.setOrgUnit("sDzK609rUbJ");//Dictionary.DIC_OrgUnit
-//TODO  nEenWmSyUEp Persone
-                trackedEntityInstance.setTrackedEntityType("nEenWmSyUEp");//Dictionary.DIC_TrackedEntityType
-
-//Tracker Attributes
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_AGE, record.get(Dictionary.DIC_AGE)));
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_FIRSTN, record.get(Dictionary.DIC_FIRSTN)));
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_FATHNAME, record.get(Dictionary.DIC_FATHNAME)));
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_FAMN, record.get(Dictionary.DIC_FAMN)));
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_NID, record.get(Dictionary.DIC_NID)));
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_BIRTHD, record.get(Dictionary.DIC_BIRTHD)));
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_TELEPHONE, record.get(Dictionary.DIC_TELEPHONE)));
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_MOBILEN, record.get(Dictionary.DIC_MOBILEN)));
-                trackedEntityInstance.getAttributes().add(
-                        dictionary.createAttribute(Dictionary.DIC_MOBILEN, record.get(Dictionary.DIC_MOBILEN)));
-                // 'household location' & 'Nationality' not find
-                /*List<Enrollment> enrollments = new ArrayList<>();
-                Enrollment enrollment = new Enrollment();
-                //.....
-                List<Event>events = new ArrayList<>();
-                Event event = new Event();
-                //.....
-                events.add(event);
-                enrollment.setEvents(events);
-                enrollments.add(enrollment);
-                trackedEntityInstance.setEnrollments(enrollments);*/
-//
-                try {
-                    TrackedEntityInstances connector = new TrackedEntityInstances();
-                    String respose = connector.post(trackedEntityInstance);
-                    System.out.println(respose);
-
-/*
-                    TrackedEntityInstancesQuery queryConnector = new TrackedEntityInstancesQuery();
-                    respose = queryConnector.get("ouMode=ALL&filter=" + dictionary.getDictionaryElement(Dictionary.DIC_FIRSTNAME).getUid() + ":EQ:Mahdi");
-                    System.out.println(respose);
-*/
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
+            LogManager.getLogManager().readConfiguration(config);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        logger = Logger.getLogger("TrackedEntity");
+    }
+
+    static class JallaliDateConverterDate implements DateValueConverter {
+
+        @Override
+        public String stringValue(Object value) throws ParseException {
+            if (value == null) {
+                return null;
+            } else if (value instanceof Date) {
+                SimpleDateFormat gDateformat = new SimpleDateFormat("yyyy-MM-dd", new Locale("en_US"));
+                return gDateformat.format((Date) value);
+            } else {
+                SimpleDateFormat gDateformat = new SimpleDateFormat("yyyy-MM-dd", new Locale("en_US"));
+                SimpleDateFormat jDateFormat = new SimpleDateFormat("yyyyMMdd", new Locale("fa_IR"));
+                return gDateformat.format(jDateFormat.parse((String) value));
+            }
+        }
+    }
+
+    private JsonObject attributeValue(CSVRecord record, DateValueConverter converter, String attribute) throws ParseException {
+        return new JsonObject()
+                .add("attribute", dictionary.getDictionaryElement(attribute).getUid())
+                .add("value", converter != null ? converter.stringValue(record.get(attribute)) : record.get(attribute));
+    }
+
+    private JsonObject attributeValue(CSVRecord record, String attribute) throws ParseException {
+        return attributeValue(record, null, attribute);
+    }
+
+    @Test
+    public void testJson() {
+        try {
+            String orgUni = "iq6Pt6QzM4d";
+            String program = "LaWt5AR1tfl";
+            dictionary.load();
+            Path path = Paths.get(this.getClass().getResource("/breast1.csv").toURI());
+            DateValueConverter dateConverter = new JallaliDateConverterDate();
+            TrackedEntityInstances connector = new TrackedEntityInstances();
+
+            CSVParser parser = CSVFile.read(path, Dictionary.CSV_HEADER);
+            int recordNumber = 0;
+            for (CSVRecord record : parser) {
+                recordNumber++;
+                //Skip 1st line
+                if (recordNumber == 1)
+                    continue;
+                try {
+                    JsonObject trackedEntity = new JsonObject()
+                            .add("trackedEntityInstance", "IKjF4BZg3hb")
+                            .add("orgUnit", orgUni)
+                            .add("trackedEntityType", "MCPQUTHX1Ze")
+                            .add("attributes", new JsonArray()
+                                    .add(attributeValue(record, Dictionary.DIC_AGE))
+                                    .add(attributeValue(record, Dictionary.DIC_FIRSTN))
+                                    .add(attributeValue(record, Dictionary.DIC_FATHNAME))
+                                    .add(attributeValue(record, Dictionary.DIC_FAMN))
+                                    .add(attributeValue(record, Dictionary.DIC_NID))
+                                    .add(attributeValue(record, Dictionary.DIC_NAtionality))
+                                    .add(attributeValue(record, dateConverter, Dictionary.DIC_BIRTHD))
+                                    .add(attributeValue(record, Dictionary.DIC_TELEPHONE))
+                                    .add(attributeValue(record, Dictionary.DIC_MOBILEN))
+                            )
+                            .add("enrollments", new JsonArray()
+                                    .add(new JsonObject()
+                                            .add("orgUnit", orgUni)
+                                            .add("program", program)
+                                            .add("enrollmentDate", dateConverter.stringValue(record.get(Dictionary.DIC_INCID)))
+                                            .add("incidentDate", dateConverter.stringValue(record.get(Dictionary.DIC_INCID)))
+                                            .add("events", new JsonArray()
+                                                    .add(new JsonObject()
+                                                            .add("eventDate", "2013-09-17"))))
+                            );
+
+                    System.out.print(trackedEntity.toString());
+                    String respose = connector.post(trackedEntity.toString());
+                    JsonObject jsonObject = (JsonObject) Json.parse(respose);
+                    System.out.print(jsonObject);
+
+                } catch (Exception e) {
+                    logger.severe("Record[" + recordNumber + "] message:" + e.getMessage());
+                }
+                break;
+            }
+        } catch (IOException e) {
+            logger.severe("Error:" + e.getMessage());
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            logger.severe("Error" + e.getMessage());
         }
 
     }

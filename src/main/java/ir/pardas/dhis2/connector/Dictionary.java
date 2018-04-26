@@ -1,12 +1,5 @@
 package ir.pardas.dhis2.connector;
 
-import org.hisp.dhis.dxf2.events.trackedentity.Attribute;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
-
 public class Dictionary extends Config {
 
     public static final String DIC_TrackedEntityInstance = "TrackedEntityInstance";
@@ -157,6 +150,7 @@ public class Dictionary extends Config {
     public static final String DIC_SourceRecordID1 = "SourceRecordID1";
     public static final String DIC_TumourIDSourceTable2 = "TumourIDSourceTable2";
     public static final String DIC_SourceRecordID2 = "SourceRecordID2";
+    public static final String DIC_NAtionality = "NAT";
 
 
     public String propertyFile() {
@@ -167,11 +161,15 @@ public class Dictionary extends Config {
         return new DictionaryElement(this.getProperty(attribute));
     }
 
-    public Attribute createAttribute(String attribute, String value) {
-        DictionaryElement element = getDictionaryElement(attribute);
-        return new Attribute(element.getUid(), element.getValueType(), value);
+    /*public Attribute createAttribute(String attributeName, String value) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DictionaryElement element = getDictionaryElement(attributeName);
+        Attribute attribute =  new Attribute(element.getUid(), element.getValueType(), value);
+        attribute.setCreated(simpleDateFormat.format(new Date()));
+        attribute.setLastUpdated(simpleDateFormat.format(new Date()));
+        return attribute;
     }
-
+*/
 
     public static String[] CSV_HEADER = new String[]{
             /*DIC_TrackedEntityInstance,
@@ -319,6 +317,7 @@ public class Dictionary extends Config {
             DIC_TumourIDSourceTable1,
             DIC_SourceRecordID1,
             DIC_TumourIDSourceTable2,
-            DIC_SourceRecordID2
+            DIC_SourceRecordID2,
+            DIC_NAtionality
     };
 }

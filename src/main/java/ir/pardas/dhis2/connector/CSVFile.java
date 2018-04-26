@@ -1,9 +1,7 @@
 package ir.pardas.dhis2.connector;
 
-import com.ctc.wstx.io.UTF8Reader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import sun.nio.cs.UTF_32;
 
 import java.io.IOException;
 import java.io.Reader;

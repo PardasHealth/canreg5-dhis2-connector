@@ -1,0 +1,2 @@
+Apr 26, 2018 2:10:21 PM ir.pardas.dhis2.connector.TrackerPayloadTest testJson
+SEVERE: Record[2] message:Index for header 'NAT' is 143 but CSVRecord only has 143 values!
